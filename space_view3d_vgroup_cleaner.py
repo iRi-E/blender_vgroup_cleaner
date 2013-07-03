@@ -39,7 +39,7 @@ import re
 def zero_verts(obj, grp, th):
     ids = []
 
-    for v in obj.data.vertices.values():
+    for v in obj.data.vertices:
         try:
             if grp.weight(v.index) <= th:
                 ids.append(v.index)
@@ -86,7 +86,7 @@ class CleanAllVgroups(bpy.types.Operator):
 
 # delete vertex groups
 def is_empty(obj, grp):
-    for v in obj.data.vertices.values():
+    for v in obj.data.vertices:
         try:
             grp.weight(v.index)
             return False
