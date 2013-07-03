@@ -53,7 +53,8 @@ def remove_verts(obj, grp, ctx):
 
     if ids:
         print("remove %d vertices from vertex group %s" % (len(ids), grp.name))
-        grp.remove(ids)
+        for i in ids:
+            grp.remove([i])
 
 
 class CleanActiveVgroup(bpy.types.Operator):
