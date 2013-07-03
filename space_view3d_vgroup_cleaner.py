@@ -1,8 +1,3 @@
-# Vertex Group Cleaner v0.1 - 3Dview Addon - Blender 2.6x
-#
-# THIS SCRIPT IS LICENSED UNDER GPL, 
-# please read the license block.
-#
 # ##### BEGIN GPL LICENSE BLOCK #####
 #
 #  This program is free software; you can redistribute it and/or
