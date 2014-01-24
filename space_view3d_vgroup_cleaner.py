@@ -137,6 +137,7 @@ class DeleteEmptyVgroups(bpy.types.Operator):
 class VGroupCleanerPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "TOOLS"
+    bl_category = "Basic"
     bl_label = "VGroup Cleaner"
     bl_options = {"DEFAULT_CLOSED"}
 
