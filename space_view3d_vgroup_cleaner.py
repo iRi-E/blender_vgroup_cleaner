@@ -52,7 +52,7 @@ def remove_verts(obj, grp, ctx):
 
 
 class CleanActiveVgroup(bpy.types.Operator):
-    """Remove Vertices with Weight=0 from Active Vertex Group in Active Selected Object"""
+    """Remove vertices with weight=0 from active vertex group in active selected object"""
     bl_idname = "vgroup_cleaner.clean_active_group"
     bl_label = "Clean Active Vertex Group"
 
@@ -66,7 +66,7 @@ class CleanActiveVgroup(bpy.types.Operator):
         return {'FINISHED'}
 
 class CleanAllVgroups(bpy.types.Operator):
-    """Remove Vertices with Weight=0 from All Vertex Groups in All Selected Objects"""
+    """Remove vertices with weight=0 from all vertex groups in all selected objects"""
     bl_idname = "vgroup_cleaner.clean_all_vgroups"
     bl_label = "Clean Vertex Groups"
 
@@ -94,7 +94,7 @@ def remove_vgrp(obj, grp):
     obj.vertex_groups.remove(grp)
 
 class DeleteEmptyVgroups(bpy.types.Operator):
-    """Delete Empty Vertex Groups in Selected Objects"""
+    """Delete empty vertex groups in selected objects"""
     bl_idname = "vgroup_cleaner.delete_empty_vgroups"
     bl_label = "Delete Empty Vertex Groups"
 
@@ -163,7 +163,7 @@ def register():
 
     bpy.types.Scene.VGCThreshold = bpy.props.FloatProperty(
         name="Threshold",
-        description="Maximum Value of Vertex Weight that Vertices will be removed from Vertex Group",
+        description="Maximum value of vertex weight that vertices will be removed from vertex group",
         min=0.0,
         max=1.0,
         default=0.000999)
