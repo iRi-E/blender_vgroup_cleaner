@@ -50,6 +50,9 @@ def remove_verts(obj, grp, ctx):
         print("remove %d vertices from vertex group %s" % (len(ids), grp.name))
         grp.remove(ids)
 
+        # toggle edit mode, to force correct drawing
+        bpy.ops.object.mode_set(mode="EDIT", toggle=True)
+        bpy.ops.object.mode_set(mode="EDIT", toggle=True)
 
 class CleanActiveVgroup(bpy.types.Operator):
     """Remove vertices with weight=0 from active vertex group in active object"""
