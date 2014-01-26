@@ -133,6 +133,35 @@ class DeleteEmptyVgroups(bpy.types.Operator):
         return {'FINISHED'}
 
 
+# clear vertex groups assigned to selected pose bones
+def selected_verts(obj, grp):
+    igrp = grp.index
+    return [v.index for v in obj.data.vertices if v.select for g in v.groups if g.group == igrp]
+
+class ClearBoneWeights(bpy.types.Operator):
+    """Remove selected vertices from vertex groups assigned to bones selected in pose mode"""
+    bl_idname = "vgroup_cleaner.clear_bone_weights"
+    bl_label = "Clear Bone Weights"
+
+    def execute(self, context):
+        parent = context.object.parent
+        if context.mode == "EDIT_MESH" and parent and parent.type == "ARMATURE":
+            bpy.ops.object.mode_set(mode="EDIT", toggle=True)
+
+            for grp in context.object.vertex_groups:
+                for bone in parent.pose.bones:
+                    if bone.bone.select and grp.name == bone.name:
+                        ids = selected_verts(context.object, grp)
+
+                        if ids:
+                            print("remove %d vertices from vertex group %s" % (len(ids), grp.name))
+                            grp.remove(ids)
+
+            bpy.ops.object.mode_set(mode="EDIT", toggle=True)
+
+        return {'FINISHED'}
+
+
 # main class
 class VGroupCleanerPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
@@ -143,18 +172,25 @@ class VGroupCleanerPanel(bpy.types.Panel):
 
     @classmethod
     def poll(cls, context):
-        return not context.edit_object
+        return not context.edit_object or context.mode == "EDIT_MESH"
 
     def draw(self, context):
         layout = self.layout
 
-        col = layout.column(align=True)
-        col.operator("vgroup_cleaner.clean_active_group", text="Clean Active VGroup")
-        col.operator("vgroup_cleaner.clean_all_vgroups", text="Clean All VGroups")
-        col.prop(context.scene, "VGCThreshold")
+        if not context.edit_object:
+            col = layout.column(align=True)
+            col.operator("vgroup_cleaner.clean_active_group", text="Clean Active VGroup")
+            col.operator("vgroup_cleaner.clean_all_vgroups", text="Clean All VGroups")
+            col.prop(context.scene, "VGCThreshold")
 
-        col = layout.column(align=True)
-        col.operator("vgroup_cleaner.delete_empty_vgroups", text="Delete Empty VGroups")
+            col = layout.column()
+            col.operator("vgroup_cleaner.delete_empty_vgroups", text="Delete Empty VGroups")
+
+        if context.mode == "EDIT_MESH":
+            col = layout.column()
+            parent = context.object.parent
+            col.active = parent is not None and parent.type == "ARMATURE"
+            col.operator("vgroup_cleaner.clear_bone_weights", text="Clear Bone Weights")
 
 
 # register the class
