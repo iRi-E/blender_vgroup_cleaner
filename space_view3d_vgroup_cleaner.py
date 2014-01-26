@@ -22,7 +22,7 @@ bl_info = {
     "version": (0, 4),
     "blender": (2, 65, 0),
     "location": "View3D > Tool Shelf > VGroup Cleaner",
-    "description": "Clean Vertex Groups or Delete Empty Vertex Groups in Selected Objects",
+    "description": "Clean vertex groups or delete empty vertex groups in selected objects",
     "tracker_url": "https://github.com/iRi-E/blender_vgroup_cleaner/issues",
     "category": "3D View"}
 
