@@ -52,8 +52,8 @@ def remove_verts(obj, grp, ctx):
 
 
 class CleanActiveVgroup(bpy.types.Operator):
-    """Remove vertices with weight=0 from active vertex group in active selected object"""
-    bl_idname = "vgroup_cleaner.clean_active_group"
+    """Remove vertices with weight=0 from active vertex group in active object"""
+    bl_idname = "vgroup_cleaner.clean_active_vgroup"
     bl_label = "Clean Active Vertex Group"
 
     def execute(self, context):
@@ -179,7 +179,7 @@ class VGroupCleanerPanel(bpy.types.Panel):
 
         if not context.edit_object:
             col = layout.column(align=True)
-            col.operator("vgroup_cleaner.clean_active_group", text="Clean Active VGroup")
+            col.operator("vgroup_cleaner.clean_active_vgroup", text="Clean Active VGroup")
             col.operator("vgroup_cleaner.clean_all_vgroups", text="Clean All VGroups")
             col.prop(context.scene, "VGCThreshold")
 
