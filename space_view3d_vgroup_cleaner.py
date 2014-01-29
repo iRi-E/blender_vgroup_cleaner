@@ -137,30 +137,39 @@ class DeleteEmptyVgroups(bpy.types.Operator):
 
 
 # clear vertex groups assigned to selected pose bones
-def selected_verts(obj, grp):
-    igrp = grp.index
-    return [v.index for v in obj.data.vertices if v.select for g in v.groups if g.group == igrp]
-
 class ClearBoneWeights(bpy.types.Operator):
-    """Remove selected vertices from vertex groups assigned to bones selected in pose mode"""
+    """Remove selected vertices from vertex groups assigned to selected pose bones"""
     bl_idname = "vgroup_cleaner.clear_bone_weights"
     bl_label = "Clear Bone Weights"
 
     def execute(self, context):
-        parent = context.object.parent
-        if context.mode == "EDIT_MESH" and parent and parent.type == "ARMATURE":
-            bpy.ops.object.mode_set(mode="EDIT", toggle=True)
+        obj = context.object
+        parent = obj.parent
+        mode = context.mode
+        if mode in ["EDIT_MESH", "PAINT_WEIGHT"] and parent and parent.type == "ARMATURE":
+            print("Object %s:" % obj.name)
+            mesh = obj.data
 
-            for grp in context.object.vertex_groups:
+            if mode == "EDIT_MESH":
+                bpy.ops.object.mode_set(mode="EDIT", toggle=True)
+
+            for grp in obj.vertex_groups:
                 for bone in parent.pose.bones:
                     if bone.bone.select and grp.name == bone.name:
-                        ids = selected_verts(context.object, grp)
+                        if mode == "EDIT_MESH" or mesh.use_paint_mask or mesh.use_paint_mask_vertex:
+                            igrp = grp.index
+                            ids = [v.index for v in mesh.vertices if v.select for g in v.groups if g.group == igrp]
+                        else:
+                            ids = [v.index for v in mesh.vertices]
 
                         if ids:
                             print("remove %d vertices from vertex group %s" % (len(ids), grp.name))
                             grp.remove(ids)
 
             bpy.ops.object.mode_set(mode="EDIT", toggle=True)
+
+            if mode == "PAINT_WEIGHT":
+                bpy.ops.object.mode_set(mode="EDIT", toggle=True)
 
         return {'FINISHED'}
 
@@ -189,7 +198,7 @@ class VGroupCleanerPanel(bpy.types.Panel):
             col = layout.column()
             col.operator("vgroup_cleaner.delete_empty_vgroups", text="Delete Empty VGroups")
 
-        if context.mode == "EDIT_MESH":
+        if context.mode in ["EDIT_MESH", "PAINT_WEIGHT"]:
             col = layout.column()
             parent = context.object.parent
             col.active = parent is not None and parent.type == "ARMATURE"
