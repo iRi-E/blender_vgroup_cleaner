@@ -197,7 +197,7 @@ class VGroupCleanerPanel(bpy.types.Panel):
             col = layout.column(align=True)
             col.operator("vgroup_cleaner.clean_active_vgroup", text="Clean Active VGroup")
             col.operator("vgroup_cleaner.clean_all_vgroups", text="Clean All VGroups")
-            col.prop(context.scene, "VGCThreshold")
+            col.prop(context.scene, "VGCThreshold", slider=True)
 
             col = layout.column()
             col.operator("vgroup_cleaner.delete_empty_vgroups", text="Delete Empty VGroups")
@@ -217,7 +217,8 @@ def register():
         name="Threshold",
         description="Maximum value of vertex weight that vertices will be removed from vertex group",
         min=0.0,
-        max=1.0,
+        soft_max=1.0,
+        precision=3,
         default=0.000999)
 
 def unregister():
