@@ -19,7 +19,7 @@
 bl_info = {
     "name": "Vertex Group Cleaner",
     "author": "IRIE Shinsuke",
-    "version": (0, 5),
+    "version": (0, 6),
     "blender": (2, 65, 0),
     "location": "View3D > Tool Shelf > VGroup Cleaner",
     "description": "Clean vertex groups or delete empty vertex groups in selected objects",
