@@ -58,6 +58,7 @@ class CleanActiveVgroup(bpy.types.Operator):
     """Remove vertices with weight=0 from active vertex group in active object"""
     bl_idname = "vgroup_cleaner.clean_active_vgroup"
     bl_label = "Clean Active Vertex Group"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         obj = context.active_object
@@ -72,6 +73,7 @@ class CleanAllVgroups(bpy.types.Operator):
     """Remove vertices with weight=0 from all vertex groups in all selected objects"""
     bl_idname = "vgroup_cleaner.clean_all_vgroups"
     bl_label = "Clean Vertex Groups"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         for obj in context.selected_objects:
@@ -100,6 +102,7 @@ class DeleteEmptyVgroups(bpy.types.Operator):
     """Delete empty vertex groups in selected objects"""
     bl_idname = "vgroup_cleaner.delete_empty_vgroups"
     bl_label = "Delete Empty Vertex Groups"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         re_L = re.compile("^(.+[._])([Ll])(\.\d+)?$")
@@ -141,6 +144,7 @@ class ClearBoneWeights(bpy.types.Operator):
     """Remove selected vertices from vertex groups assigned to selected pose bones"""
     bl_idname = "vgroup_cleaner.clear_bone_weights"
     bl_label = "Clear Bone Weights"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         obj = context.object
