@@ -102,8 +102,8 @@ class DeleteEmptyVgroups(bpy.types.Operator):
     bl_label = "Delete Empty Vertex Groups"
 
     def execute(self, context):
-        re_L = re.compile("^(.+[._])L(\.\d+)?$")
-        re_R = re.compile("^(.+[._])R(\.\d+)?$")
+        re_L = re.compile("^(.+[._])([Ll])(\.\d+)?$")
+        re_R = re.compile("^(.+[._])([Rr])(\.\d+)?$")
 
         for obj in context.selected_objects:
             print("Object %s:" % obj.name)
@@ -114,7 +114,7 @@ class DeleteEmptyVgroups(bpy.types.Operator):
                 if m or re_R.match(grp.name):
 
                     if m:
-                        name_R = m.group(1) + "R" + (m.group(2) or "")
+                        name_R = m.group(1) + chr(ord(m.group(2)) + 6) + (m.group(3) or "")
                     else:
                         name_R = grp.name
 
