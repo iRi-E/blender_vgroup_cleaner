@@ -105,8 +105,8 @@ class DeleteEmptyVgroups(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        re_L = re.compile("^(.+[._])([Ll])(\.\d+)?$")
-        re_R = re.compile("^(.+[._])([Rr])(\.\d+)?$")
+        re_L = re.compile(r"^(.+[._])([Ll])(\.\d+)?$")
+        re_R = re.compile(r"^(.+[._])([Rr])(\.\d+)?$")
 
         for obj in context.selected_objects:
             print("Object %s:" % obj.name)
