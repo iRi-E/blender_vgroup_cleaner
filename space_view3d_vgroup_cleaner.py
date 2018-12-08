@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import bpy
+
 bl_info = {
     "name": "Vertex Group Cleaner",
     "author": "IRIE Shinsuke",
@@ -25,9 +27,6 @@ bl_info = {
     "description": "Clean vertex groups or delete empty vertex groups in selected objects",
     "tracker_url": "https://github.com/iRi-E/blender_vgroup_cleaner/issues",
     "category": "3D View"}
-
-import bpy
-import re
 
 
 # clean vertex groups
@@ -43,6 +42,7 @@ def zero_verts(obj, grp, th):
 
     return ids
 
+
 def remove_verts(obj, grp, ctx):
     ids = zero_verts(obj, grp, ctx.scene.VGCThreshold)
 
@@ -53,6 +53,7 @@ def remove_verts(obj, grp, ctx):
         # toggle edit mode, to force correct drawing
         bpy.ops.object.mode_set(mode="EDIT", toggle=True)
         bpy.ops.object.mode_set(mode="EDIT", toggle=True)
+
 
 class CleanActiveVgroup(bpy.types.Operator):
     """Remove vertices with weight=0 from active vertex group in active object"""
@@ -68,6 +69,7 @@ class CleanActiveVgroup(bpy.types.Operator):
             if idx >= 0:
                 remove_verts(obj, obj.vertex_groups[idx], context)
         return {'FINISHED'}
+
 
 class CleanAllVgroups(bpy.types.Operator):
     """Remove vertices with weight=0 from all vertex groups in all selected objects"""
@@ -94,9 +96,11 @@ def is_empty(obj, grp):
 
     return True
 
+
 def remove_vgrp(obj, grp):
     print("delete vertex group %s" % grp.name)
     obj.vertex_groups.remove(grp)
+
 
 class DeleteEmptyVgroups(bpy.types.Operator):
     """Delete empty vertex groups in selected objects"""
@@ -105,6 +109,8 @@ class DeleteEmptyVgroups(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+        import re
+
         re_L = re.compile(r"^(.+[._])([Ll])(\.\d+)?$")
         re_R = re.compile(r"^(.+[._])([Rr])(\.\d+)?$")
 
@@ -220,6 +226,7 @@ def register():
         soft_max=1.0,
         precision=3,
         default=0.000999)
+
 
 def unregister():
     del bpy.types.Scene.VGCThreshold
