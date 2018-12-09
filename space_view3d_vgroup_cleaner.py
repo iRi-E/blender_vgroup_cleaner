@@ -215,9 +215,19 @@ class VGROUP_CLEANER_PT_vgroup_cleaner_panel(bpy.types.Panel):
             col.operator("vgroup_cleaner.clear_bone_weights", text="Clear Bone Weights")
 
 
-# register the class
+# register classes and props
+classes = (
+    VGROUP_CLEANER_OT_clean_active_vgroup,
+    VGROUP_CLEANER_OT_clean_all_vgroups,
+    VGROUP_CLEANER_OT_delete_empty_vgroups,
+    VGROUP_CLEANER_OT_clear_bone_weights,
+    VGROUP_CLEANER_PT_vgroup_cleaner_panel,
+)
+
+
 def register():
-    bpy.utils.register_module(__name__)
+    for cls in classes:
+        bpy.utils.register_class(cls)
 
     bpy.types.Scene.vgroup_cleaner_threshold = bpy.props.FloatProperty(
         name="Threshold",
@@ -231,7 +241,8 @@ def register():
 def unregister():
     del bpy.types.Scene.vgroup_cleaner_threshold
 
-    bpy.utils.unregister_module(__name__)
+    for cls in classes:
+        bpy.utils.unregister_class(cls)
 
 
 if __name__ == "__main__":
