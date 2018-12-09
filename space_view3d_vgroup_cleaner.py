@@ -23,7 +23,7 @@ bl_info = {
     "author": "IRIE Shinsuke",
     "version": (0, 6),
     "blender": (2, 80, 0),
-    "location": "View3D > Tool Shelf > VGroup Cleaner",
+    "location": "View3D > Object/Weights/Vertex > Vertex Group Cleaner",
     "description": "Clean vertex groups or delete empty vertex groups in selected objects",
     "tracker_url": "https://github.com/iRi-E/blender_vgroup_cleaner/issues",
     "category": "3D View"}
@@ -211,19 +211,19 @@ class VGROUP_CLEANER_OT_clear_bone_weights(bpy.types.Operator):
 
 # user interface
 class VIEW3D_MT_vgroup_cleaner(bpy.types.Menu):
-    bl_label = "VGroup Cleaner"
+    bl_label = "Vertex Group Cleaner"
 
     def draw(self, context):
         layout = self.layout
 
         if not context.edit_object:
-            col = layout.column(align=True)
-            col.operator("vgroup_cleaner.clean_active_vgroup", text="Clean Active VGroup")
-            col.operator("vgroup_cleaner.clean_all_vgroups", text="Clean All VGroups")
+            col = layout.column()
+            col.operator("vgroup_cleaner.clean_active_vgroup", text="Clean Active Vertex Group")
+            col.operator("vgroup_cleaner.clean_all_vgroups", text="Clean All Vertex Groups")
             col.prop(context.scene, "vgroup_cleaner_threshold", slider=True)
 
-            col = layout.column()
-            col.operator("vgroup_cleaner.delete_empty_vgroups", text="Delete Empty VGroups")
+            col.separator()
+            col.operator("vgroup_cleaner.delete_empty_vgroups", text="Delete Empty Vertex Groups")
 
         if context.mode in {"EDIT_MESH", "PAINT_WEIGHT"}:
             col = layout.column()
@@ -235,7 +235,7 @@ class VIEW3D_MT_vgroup_cleaner(bpy.types.Menu):
 def vgroup_cleaner_menu(self, context):
     layout = self.layout
     layout.separator()
-    layout.menu("VIEW3D_MT_vgroup_cleaner")
+    layout.menu("VIEW3D_MT_vgroup_cleaner", icon="PLUGIN")
 
 
 # register classes and props
@@ -253,7 +253,7 @@ def register():
         bpy.utils.register_class(cls)
     bpy.types.VIEW3D_MT_object.append(vgroup_cleaner_menu)
     bpy.types.VIEW3D_MT_paint_weight.append(vgroup_cleaner_menu)
-    bpy.types.VIEW3D_MT_edit_mesh.append(vgroup_cleaner_menu)
+    bpy.types.VIEW3D_MT_edit_mesh_vertices.append(vgroup_cleaner_menu)
 
     bpy.types.Scene.vgroup_cleaner_threshold = bpy.props.FloatProperty(
         name="Threshold",
@@ -271,7 +271,7 @@ def unregister():
         bpy.utils.unregister_class(cls)
     bpy.types.VIEW3D_MT_object.remove(vgroup_cleaner_menu)
     bpy.types.VIEW3D_MT_paint_weight.remove(vgroup_cleaner_menu)
-    bpy.types.VIEW3D_MT_edit_mesh.remove(vgroup_cleaner_menu)
+    bpy.types.VIEW3D_MT_edit_mesh_vertices.remove(vgroup_cleaner_menu)
 
 
 if __name__ == "__main__":
