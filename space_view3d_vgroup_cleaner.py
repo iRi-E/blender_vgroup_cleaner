@@ -63,11 +63,15 @@ class VGROUP_CLEANER_OT_clean_active_vgroup(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        if obj in context.selected_objects:
-            print("Object %s:" % obj.name)
-            idx = obj.vertex_groups.active_index
-            if idx >= 0:
-                remove_verts(obj, obj.vertex_groups[idx], context)
+        if obj.type != 'MESH' or obj not in context.selected_objects:
+            self.report({'INFO'}, "Mesh object is not selected")
+            return {'CANCELLED'}
+
+        print("Object %s:" % obj.name)
+        idx = obj.vertex_groups.active_index
+        if idx >= 0:
+            remove_verts(obj, obj.vertex_groups[idx], context)
+
         return {'FINISHED'}
 
 
@@ -78,10 +82,16 @@ class VGROUP_CLEANER_OT_clean_all_vgroups(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        for obj in context.selected_objects:
+        objs = [obj for obj in context.selected_objects if obj.type == 'MESH']
+        if not objs:
+            self.report({'INFO'}, "Mesh object is not selected")
+            return {'CANCELLED'}
+
+        for obj in objs:
             print("Object %s:" % obj.name)
             for grp in obj.vertex_groups:
                 remove_verts(obj, grp, context)
+
         return {'FINISHED'}
 
 
@@ -110,11 +120,15 @@ class VGROUP_CLEANER_OT_delete_empty_vgroups(bpy.types.Operator):
 
     def execute(self, context):
         import re
-
         re_L = re.compile(r"^(.+[._])([Ll])(\.\d+)?$")
         re_R = re.compile(r"^(.+[._])([Rr])(\.\d+)?$")
 
-        for obj in context.selected_objects:
+        objs = [obj for obj in context.selected_objects if obj.type == 'MESH']
+        if not objs:
+            self.report({'INFO'}, "Mesh object is not selected")
+            return {'CANCELLED'}
+
+        for obj in objs:
             print("Object %s:" % obj.name)
             grps_LR = {}
 
@@ -153,33 +167,44 @@ class VGROUP_CLEANER_OT_clear_bone_weights(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        obj = context.object
-        parent = obj.parent
+        obj = context.active_object
+        if obj.type != 'MESH' or obj not in context.selected_objects:
+            self.report({'INFO'}, "Mesh object is not selected")
+            return {'CANCELLED'}
+
         mode = context.mode
-        if mode in ["EDIT_MESH", "PAINT_WEIGHT"] and parent and parent.type == "ARMATURE":
-            print("Object %s:" % obj.name)
-            mesh = obj.data
+        if mode not in {'EDIT_MESH', 'PAINT_WEIGHT'}:
+            self.report({'INFO'}, "Need to be edit mode or weight paint mode")
+            return {'CANCELLED'}
 
-            if mode == "EDIT_MESH":
-                bpy.ops.object.mode_set(mode="EDIT", toggle=True)
+        parent = obj.parent
+        if not parent or parent.type != 'ARMATURE':
+            self.report({'INFO'}, "Mesh object is not parented to armature")
+            return {'CANCELLED'}
 
-            for grp in obj.vertex_groups:
-                for bone in parent.pose.bones:
-                    if bone.bone.select and grp.name == bone.name:
-                        if mode == "EDIT_MESH" or mesh.use_paint_mask or mesh.use_paint_mask_vertex:
-                            igrp = grp.index
-                            ids = [v.index for v in mesh.vertices if v.select for g in v.groups if g.group == igrp]
-                        else:
-                            ids = [v.index for v in mesh.vertices]
+        print("Object %s:" % obj.name)
+        mesh = obj.data
 
-                        if ids:
-                            print("remove %d vertices from vertex group %s" % (len(ids), grp.name))
-                            grp.remove(ids)
-
+        if mode == "EDIT_MESH":
             bpy.ops.object.mode_set(mode="EDIT", toggle=True)
 
-            if mode == "PAINT_WEIGHT":
-                bpy.ops.object.mode_set(mode="EDIT", toggle=True)
+        for grp in obj.vertex_groups:
+            for bone in parent.pose.bones:
+                if bone.bone.select and grp.name == bone.name:
+                    if mode == "EDIT_MESH" or mesh.use_paint_mask or mesh.use_paint_mask_vertex:
+                        igrp = grp.index
+                        ids = [v.index for v in mesh.vertices if v.select for g in v.groups if g.group == igrp]
+                    else:
+                        ids = [v.index for v in mesh.vertices]
+
+                    if ids:
+                        print("remove %d vertices from vertex group %s" % (len(ids), grp.name))
+                        grp.remove(ids)
+
+        bpy.ops.object.mode_set(mode="EDIT", toggle=True)
+
+        if mode == "PAINT_WEIGHT":
+            bpy.ops.object.mode_set(mode="EDIT", toggle=True)
 
         return {'FINISHED'}
 
@@ -208,7 +233,7 @@ class VGROUP_CLEANER_PT_vgroup_cleaner_panel(bpy.types.Panel):
             col = layout.column()
             col.operator("vgroup_cleaner.delete_empty_vgroups", text="Delete Empty VGroups")
 
-        if context.mode in ["EDIT_MESH", "PAINT_WEIGHT"]:
+        if context.mode in {"EDIT_MESH", "PAINT_WEIGHT"}:
             col = layout.column()
             parent = context.object.parent
             col.active = parent is not None and parent.type == "ARMATURE"
