@@ -22,7 +22,7 @@ bl_info = {
     "name": "Vertex Group Cleaner",
     "author": "IRIE Shinsuke",
     "version": (0, 6),
-    "blender": (2, 65, 0),
+    "blender": (2, 80, 0),
     "location": "View3D > Tool Shelf > VGroup Cleaner",
     "description": "Clean vertex groups or delete empty vertex groups in selected objects",
     "tracker_url": "https://github.com/iRi-E/blender_vgroup_cleaner/issues",
@@ -209,17 +209,9 @@ class VGROUP_CLEANER_OT_clear_bone_weights(bpy.types.Operator):
         return {'FINISHED'}
 
 
-# main class
-class VGROUP_CLEANER_PT_vgroup_cleaner_panel(bpy.types.Panel):
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "TOOLS"
-    bl_category = "Tools"
+# user interface
+class VIEW3D_MT_vgroup_cleaner(bpy.types.Menu):
     bl_label = "VGroup Cleaner"
-    bl_options = {"DEFAULT_CLOSED"}
-
-    @classmethod
-    def poll(cls, context):
-        return not context.edit_object or context.mode == "EDIT_MESH"
 
     def draw(self, context):
         layout = self.layout
@@ -240,19 +232,28 @@ class VGROUP_CLEANER_PT_vgroup_cleaner_panel(bpy.types.Panel):
             col.operator("vgroup_cleaner.clear_bone_weights", text="Clear Bone Weights")
 
 
+def vgroup_cleaner_menu(self, context):
+    layout = self.layout
+    layout.separator()
+    layout.menu("VIEW3D_MT_vgroup_cleaner")
+
+
 # register classes and props
 classes = (
     VGROUP_CLEANER_OT_clean_active_vgroup,
     VGROUP_CLEANER_OT_clean_all_vgroups,
     VGROUP_CLEANER_OT_delete_empty_vgroups,
     VGROUP_CLEANER_OT_clear_bone_weights,
-    VGROUP_CLEANER_PT_vgroup_cleaner_panel,
+    VIEW3D_MT_vgroup_cleaner,
 )
 
 
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
+    bpy.types.VIEW3D_MT_object.append(vgroup_cleaner_menu)
+    bpy.types.VIEW3D_MT_paint_weight.append(vgroup_cleaner_menu)
+    bpy.types.VIEW3D_MT_edit_mesh.append(vgroup_cleaner_menu)
 
     bpy.types.Scene.vgroup_cleaner_threshold = bpy.props.FloatProperty(
         name="Threshold",
@@ -268,6 +269,9 @@ def unregister():
 
     for cls in classes:
         bpy.utils.unregister_class(cls)
+    bpy.types.VIEW3D_MT_object.remove(vgroup_cleaner_menu)
+    bpy.types.VIEW3D_MT_paint_weight.remove(vgroup_cleaner_menu)
+    bpy.types.VIEW3D_MT_edit_mesh.remove(vgroup_cleaner_menu)
 
 
 if __name__ == "__main__":
