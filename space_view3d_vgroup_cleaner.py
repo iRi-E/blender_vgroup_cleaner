@@ -22,7 +22,7 @@ bl_info = {
     "name": "Vertex Group Cleaner",
     "author": "IRIE Shinsuke",
     "version": (0, 6),
-    "blender": (2, 80, 0),
+    "blender": (2, 80, 0),  # or (2, 79, 0)
     "location": "View3D > Object/Weights/Vertex > Vertex Group Cleaner",
     "description": "Clean vertex groups or delete empty vertex groups in selected objects",
     "tracker_url": "https://github.com/iRi-E/blender_vgroup_cleaner/issues",
