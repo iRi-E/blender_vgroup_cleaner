@@ -44,7 +44,7 @@ def zero_verts(obj, grp, th):
 
 
 def remove_verts(obj, grp, ctx):
-    ids = zero_verts(obj, grp, ctx.scene.VGCThreshold)
+    ids = zero_verts(obj, grp, ctx.scene.vgroup_cleaner_threshold)
 
     if ids:
         print("remove %d vertices from vertex group %s" % (len(ids), grp.name))
@@ -55,7 +55,7 @@ def remove_verts(obj, grp, ctx):
         bpy.ops.object.mode_set(mode="EDIT", toggle=True)
 
 
-class CleanActiveVgroup(bpy.types.Operator):
+class VGROUP_CLEANER_OT_clean_active_vgroup(bpy.types.Operator):
     """Remove vertices with weight=0 from active vertex group in active object"""
     bl_idname = "vgroup_cleaner.clean_active_vgroup"
     bl_label = "Clean Active Vertex Group"
@@ -71,7 +71,7 @@ class CleanActiveVgroup(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class CleanAllVgroups(bpy.types.Operator):
+class VGROUP_CLEANER_OT_clean_all_vgroups(bpy.types.Operator):
     """Remove vertices with weight=0 from all vertex groups in all selected objects"""
     bl_idname = "vgroup_cleaner.clean_all_vgroups"
     bl_label = "Clean Vertex Groups"
@@ -102,7 +102,7 @@ def remove_vgrp(obj, grp):
     obj.vertex_groups.remove(grp)
 
 
-class DeleteEmptyVgroups(bpy.types.Operator):
+class VGROUP_CLEANER_OT_delete_empty_vgroups(bpy.types.Operator):
     """Delete empty vertex groups in selected objects"""
     bl_idname = "vgroup_cleaner.delete_empty_vgroups"
     bl_label = "Delete Empty Vertex Groups"
@@ -146,7 +146,7 @@ class DeleteEmptyVgroups(bpy.types.Operator):
 
 
 # clear vertex groups assigned to selected pose bones
-class ClearBoneWeights(bpy.types.Operator):
+class VGROUP_CLEANER_OT_clear_bone_weights(bpy.types.Operator):
     """Remove selected vertices from vertex groups assigned to selected pose bones"""
     bl_idname = "vgroup_cleaner.clear_bone_weights"
     bl_label = "Clear Bone Weights"
@@ -185,7 +185,7 @@ class ClearBoneWeights(bpy.types.Operator):
 
 
 # main class
-class VGroupCleanerPanel(bpy.types.Panel):
+class VGROUP_CLEANER_PT_vgroup_cleaner_panel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "TOOLS"
     bl_category = "Tools"
@@ -203,7 +203,7 @@ class VGroupCleanerPanel(bpy.types.Panel):
             col = layout.column(align=True)
             col.operator("vgroup_cleaner.clean_active_vgroup", text="Clean Active VGroup")
             col.operator("vgroup_cleaner.clean_all_vgroups", text="Clean All VGroups")
-            col.prop(context.scene, "VGCThreshold", slider=True)
+            col.prop(context.scene, "vgroup_cleaner_threshold", slider=True)
 
             col = layout.column()
             col.operator("vgroup_cleaner.delete_empty_vgroups", text="Delete Empty VGroups")
@@ -219,7 +219,7 @@ class VGroupCleanerPanel(bpy.types.Panel):
 def register():
     bpy.utils.register_module(__name__)
 
-    bpy.types.Scene.VGCThreshold = bpy.props.FloatProperty(
+    bpy.types.Scene.vgroup_cleaner_threshold = bpy.props.FloatProperty(
         name="Threshold",
         description="Maximum value of vertex weight that vertices will be removed from vertex group",
         min=0.0,
@@ -229,7 +229,7 @@ def register():
 
 
 def unregister():
-    del bpy.types.Scene.VGCThreshold
+    del bpy.types.Scene.vgroup_cleaner_threshold
 
     bpy.utils.unregister_module(__name__)
 
